@@ -320,8 +320,8 @@
   <div class="todos">
     
     <div>
-      <form (submit)="addTask($event)">
-        <input [(ngModel)]="newTask" (keyup.enter)="newTask=''" class=textfield name ="newTask">
+      <form (submit)="addTask($event); filteredTodos=[]">
+        <input [(ngModel)]="newTask" (keyup)="filterTasks(newTask)" (keyup.enter)="newTask='';filteredTodos=[]" (keyup.delete)="filterTasks(newTask)" class=textfield name ="newTask">
         <button type="submit" [disabled]="newTask===''">Add Todo</button>
       </form>
     </div>
@@ -334,15 +334,34 @@
       
       Typing: {{ newTask }}
     </div>
-    
+
+    <div [hidden]="filteredTodos.length!==0">
     <ul>
       <li *ngFor="let todo of todos; let i=index">
-        <button *ngIf="!todo.completed" (click)="todo.completed = completeTask($event)">COMPLETE!</button>
+        <button *ngIf="!todo.completed" (click)="todo.completed = completeTask()">COMPLETE!</button>
+        <button (click)="editTask(i)">Edit</button>
         <input *ngIf="todo.completed" type="checkbox" class="checkbox" [(ngModel)]="todo.completed" />
         <span [ngClass]="{'checked': todo.completed}">{{ todo.task }}</span>
         <span (click)="deleteTask(i)" class="delete-icon">[X]</span>
       </li>
     </ul>
+  </div>
+
+  <div [hidden]="filteredTodos.length===0"> 
+    <ul>
+      <li *ngFor="let todo of filteredTodos; let i=index">
+        <button *ngIf="!todo.completed" (click)="todo.completed = completeTask()">COMPLETE!</button>
+        <button (click)="editFilteredTask(i)">Edit</button>
+        <input *ngIf="todo.completed" type="checkbox" class="checkbox" [(ngModel)]="todo.completed" />
+        <span [ngClass]="{'checked': todo.completed}">{{ todo.task }}</span>
+        <span (click)="deleteTask(i)" class="delete-icon">[X]</span>
+      </li>
+    </ul>
+  </div>
+
+    <div [hidden]="todos.length">
+      CONGRATS THIS LIST IS EMPTY!!!
+    </div>
 
     <div class="mtop20">
       <button (click)="deleteSelectedTasks()">Delete Selected</button>
